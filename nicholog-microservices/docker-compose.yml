@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # --- BASE DE DATOS ---
+  mongo-db:
+    image: mongo:latest
+    container_name: nicholog-mongo
+    restart: always
+    ports:
+      - "27017:27017" # Expuesto para que entres con MongoDB Compass
+    volumes:
+      - ./data/db:/data/db # Persistencia de datos local
+    networks:
+      - nicholog-network
+
+  # --- MICROSERVICIOS ---
+  
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - MONGO_URI=mongodb://mongo-db:27017/nicholog # Ojo: apunta al servicio 'mongo-db', no a localhost
+      - JWT_SECRET=tu_secreto_super_seguro
+    depends_on:
+      - mongo-db
+    networks:
+      - nicholog-network
+
+  catalog-service:
+    build: ./catalog-service
+    container_name: catalog-service
+    ports:
+      - "5002:5002"
+    environment:
+      - PORT=5002
+      - MONGO_URI=mongodb://mongo-db:27017/nicholog
+      - JWT_SECRET=tu_secreto_super_seguro
+    depends_on:
+      - mongo-db
+    networks:
+      - nicholog-network
+
+  analytics-service:
+    build: ./analytics-service
+    container_name: analytics-service
+    ports:
+      - "5003:5003"
+    environment:
+      - PORT=5003
+      - MONGO_URI=mongodb://mongo-db:27017/nicholog
+      - JWT_SECRET=tu_secreto_super_seguro
+    depends_on:
+      - mongo-db
+    networks:
+      - nicholog-network
+
+  upload-service:
+    build: ./upload-service
+    container_name: upload-service
+    ports:
+      - "5004:5004"
+    environment:
+      - PORT=5004
+      # LLENA ESTOS DATOS CON TUS CREDENCIALES REALES DE CLOUDINARY
+      - CLOUDINARY_CLOUD_NAME=xxxx
+      - CLOUDINARY_API_KEY=xxxx
+      - CLOUDINARY_API_SECRET=xxxx
+    networks:
+      - nicholog-network
+
+  # --- API GATEWAY ---
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080" # Este es el puerto que usará tu Ionic
+    depends_on:
+      - auth-service
+      - catalog-service
+      - analytics-service
+      - upload-service
+    networks:
+      - nicholog-network
+
+networks:
+  nicholog-network:
+    driver: bridge

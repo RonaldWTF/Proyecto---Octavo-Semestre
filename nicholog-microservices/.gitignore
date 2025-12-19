@@ -1,15 +1,49 @@
-
-# Ignorar node_modules
+# --- DEPENDENCIAS (Vital) ---
 node_modules/
+package-lock.json   # Opcional: Algunos equipos lo suben, otros no. Si usas yarn, ignóralo.
+npm-debug.log
+yarn-error.log
 
-# Ignorar archivos de configuración de IDEs (si estás usando VSCode, por ejemplo)
-.vscode/
-
-# Ignorar el archivo .env (contiene credenciales y variables sensibles)
+# --- VARIABLES DE ENTORNO (Seguridad) ---
 .env
+.env.local
+.env.*.local
 
-# Ignorar archivos de log
-*.log
+# --- SISTEMA OPERATIVO (Basura del sistema) ---
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
+# --- IDEs y EDITORES ---
+.vscode/
+.idea/
+*.swp
+*.swo
 
+# --- DOCKER Y BASE DE DATOS LOCAL (¡MUY IMPORTANTE!) ---
+# Ignorar la carpeta donde Docker guarda los datos de MongoDB en tu PC
+# (Si configuraste volumenes como ./data:/data/db)
+data/
+mongo-data/
+dump/
 
+# --- ARCHIVOS TEMPORALES DE MICROSERVICIOS ---
+# Si algún servicio guarda archivos temporales (ej. Upload Service)
+tmp/
+uploads/
+coverage/
+
+# --- FRONTEND (IONIC / ANGULAR) ---
+# Ignorar la carpeta compilada (build)
+www/
+dist/
+
+# Ignorar archivos temporales de Angular/Ionic
+.angular/
+.ionic/
+.sass-cache/
+
+# Ignorar carpetas nativas (se generan al compilar)
+platforms/
+plugins/
